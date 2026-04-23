@@ -395,14 +395,3 @@ nav.scrolled .bg-white\/80 {
     
     .pt-32 { padding-top: 6rem !important; }
 }
-
-/* Custom Color Overrides for NexumPOS Brand */
-.text-indigo-600 {
-    --tw-text-opacity: 1;
-    color: rgb(70 229 134);
-}
-
-.text-indigo-500 {
-    --tw-text-opacity: 1;
-    color: rgb(99 241 124);
-}
