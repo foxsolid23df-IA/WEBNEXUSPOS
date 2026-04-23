@@ -1,171 +1,184 @@
 /**
  * NexumPOS Landing Page Script
- * Handles UI interactions and Gemini AI integration
+ * Modular architecture for UI and NexumIA Integration
  */
 
+const NexumIA = {
+    apiKey: "TU_API_KEY_AQUI",
+    endpoint: "https://api.groq.com/openai/v1/chat/completions",
+    model: "llama-3.3-70b-versatile",
+
+    async ask(prompt, systemPrompt) {
+        if (!this.apiKey || this.apiKey === "TU_API_KEY_AQUI") return "⚠️ API Key no configurada.";
+
+        const payload = {
+            model: this.model,
+            messages: [
+                { role: "system", content: systemPrompt },
+                { role: "user", content: prompt }
+            ],
+            temperature: 0.7,
+            max_tokens: 1024
+        };
+
+        try {
+            const response = await fetch(this.endpoint, {
+                method: 'POST',
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${this.apiKey.trim()}`
+                },
+                body: JSON.stringify(payload)
+            });
+            
+            if (!response.ok) throw new Error(`HTTP ${response.status}`);
+            
+            const data = await response.json();
+            return data.choices?.[0]?.message?.content || "Sin respuesta.";
+        } catch (error) {
+            console.error("NexumIA Error:", error);
+            return `⚠️ Error de conexión: ${error.message}`;
+        }
+    },
+
+    typeWriter(element, text, speed = 10) {
+        let i = 0;
+        element.innerHTML = "";
+        const formattedText = text.replace(/\n/g, '<br>');
+        
+        function type() {
+            if (i < text.length) {
+                // Handle newlines correctly in display
+                const currentText = text.substring(0, i + 1).replace(/\n/g, '<br>');
+                element.innerHTML = currentText;
+                i++;
+                setTimeout(type, speed);
+            }
+        }
+        type();
+    }
+};
+
+const UI = {
+    setLoading(btn, isLoading, text) {
+        btn.disabled = isLoading;
+        if (isLoading) {
+            btn.innerHTML = `<i class="fas fa-circle-notch fa-spin"></i> ${text}`;
+        } else {
+            btn.innerHTML = text;
+        }
+    },
+
+    showResult(container, aiText, userText) {
+        container.innerHTML = "";
+        container.classList.remove('hidden');
+        
+        if (userText) {
+            const u = document.createElement('div');
+            u.className = 'chat-bubble chat-bubble-user animate-slide-in';
+            u.innerText = userText;
+            container.appendChild(u);
+        }
+
+        const a = document.createElement('div');
+        a.className = 'chat-bubble chat-bubble-ai skeleton-loading';
+        container.appendChild(a);
+
+        // Simulate thinking delay then type
+        setTimeout(() => {
+            a.classList.remove('skeleton-loading');
+            NexumIA.typeWriter(a, aiText);
+        }, 1000);
+    }
+};
+
 document.addEventListener('DOMContentLoaded', () => {
-    // Navbar Scroll Effect
+    // Navbar Scroll
     const navbar = document.getElementById('navbar');
     window.addEventListener('scroll', () => {
-        if (window.scrollY > 50) {
-            navbar.classList.add('scrolled');
-        } else {
-            navbar.classList.remove('scrolled');
-        }
+        navbar.classList.toggle('scrolled', window.scrollY > 50);
     });
 
     // Reveal on Scroll
-    const revealElements = document.querySelectorAll('.ai-card, .glass-card, .p-6.rounded-3xl');
-    const revealOnScroll = () => {
-        const windowHeight = window.innerHeight;
-        revealElements.forEach(el => {
-            const elementTop = el.getBoundingClientRect().top;
-            const elementVisible = 150;
-            if (elementTop < windowHeight - elementVisible) {
-                el.classList.add('animate-fade-in-up');
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('active');
             }
         });
+    }, { threshold: 0.1 });
+
+    document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+    // FAQ
+    window.toggleFAQ = (el) => {
+        const item = el.parentElement;
+        const wasActive = item.classList.contains('active');
+        document.querySelectorAll('.faq-item').forEach(f => f.classList.remove('active'));
+        if (!wasActive) item.classList.add('active');
     };
-    window.addEventListener('scroll', revealOnScroll);
-    revealOnScroll(); // Initial check
+
+    // Contact Form
+    const contactForm = document.getElementById('contact-form');
+    if (contactForm) {
+        contactForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = contactForm.querySelector('button[type="submit"]');
+            const originalText = btn.innerHTML;
+            UI.setLoading(btn, true, 'Enviando...');
+
+            const data = new FormData(contactForm);
+            const text = `Hola NexumPOS! 👋\n\nMe interesa el sistema.\n*Nombre:* ${data.get('name')}\n*Negocio:* ${data.get('business')}\n*Msg:* ${data.get('message')}`;
+            
+            setTimeout(() => {
+                window.open(`https://wa.me/525650607108?text=${encodeURIComponent(text)}`, '_blank');
+                UI.setLoading(btn, false, originalText);
+                contactForm.reset();
+            }, 800);
+        });
+    }
 });
 
-// --- Groq AI Integration ---
-
-// NOTE: Ideally, the API key should be handled via a secure backend.
-// For this standalone landing page demo, it is provided here.
-const GROQ_API_KEY = "TU_API_KEY_AQUI"; // Reemplaza con tu propia clave de Groq Cloud
-
-/**
- * Generic function to fetch from Groq AI API (OpenAI Compatible)
- */
-async function fetchAI(prompt, systemPrompt) {
-    if (!GROQ_API_KEY) {
-        console.warn("NexumIA: No se ha configurado la API Key de Groq.");
-        return "⚠️ Por favor, configura tu API Key en assets/js/script.js para activar la Inteligencia Artificial.";
-    }
-
-    const endpoint = "https://api.groq.com/openai/v1/chat/completions";
-    
-    const payload = {
-        model: "llama-3.3-70b-versatile",
-        messages: [
-            { role: "system", content: systemPrompt },
-            { role: "user", content: prompt }
-        ],
-        temperature: 0.7,
-        max_tokens: 1024,
-        top_p: 1
-    };
-
-    try {
-        const response = await fetch(endpoint, {
-            method: 'POST',
-            headers: { 
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${GROQ_API_KEY.trim()}`
-            },
-            body: JSON.stringify(payload)
-        });
-        
-        if (!response.ok) {
-            const errData = await response.json();
-            console.error("Groq API Error:", errData);
-            throw new Error(errData.error?.message || `HTTP Error ${response.status}`);
-        }
-        
-        const data = await response.json();
-        const resultText = data.choices?.[0]?.message?.content;
-        return resultText || "La IA no devolvió una respuesta válida.";
-    } catch (error) {
-        console.error("Groq Error:", error);
-        return `⚠️ Error de Conexión: ${error.message}. Por favor verifica la disponibilidad de la API de Groq.`;
-    }
-}
-
-/**
- * AI Auditor Feature
- */
+// AI Handlers
 async function runAuditAI() {
     const input = document.getElementById('audit-input');
     const res = document.getElementById('res-audit');
     const btn = document.getElementById('btn-audit');
+    const val = input.value.trim();
 
-    if (!input.value.trim()) {
-        res.innerText = "Por favor describe el caso que deseas analizar.";
-        res.classList.remove('hidden');
-        return;
-    }
-
-    setLoading(btn, true, 'Analizando...');
-
-    const system = "Eres NexumIA, un auditor experto para pequeños negocios en México. Tu objetivo es ayudar a entender por qué falta inventario o dinero. Analiza el caso considerando posibles errores humanos, mermas o falta de control con proveedores. Ofrece 2 razones probables y 1 consejo preventivo usando NexumPOS. Sé profesional pero cercano. Máximo 100 palabras.";
-    const text = await fetchAI(`Caso: ${input.value}`, system);
-
-    showResult(res, text);
-    setLoading(btn, false, '<i class="fas fa-bolt-lightning text-yellow-400"></i> Analizar Caso');
+    if (!val) return;
+    UI.setLoading(btn, true, 'Analizando...');
+    const prompt = `Caso: ${val}`;
+    const sys = "Eres NexumIA Auditor. Analiza faltantes de dinero o inventario. Da 2 razones y 1 consejo. Máximo 100 palabras.";
+    const text = await NexumIA.ask(prompt, sys);
+    UI.showResult(res, text, val);
+    UI.setLoading(btn, false, '<i class="fas fa-bolt-lightning text-yellow-400"></i> Analizar Caso');
 }
 
-/**
- * ROI Calculator Feature
- */
 async function calculateROI() {
-    const hours = document.getElementById('roi-hours');
+    const input = document.getElementById('roi-hours');
     const res = document.getElementById('res-roi');
     const btn = document.getElementById('btn-roi');
+    const val = input.value;
 
-    if (!hours.value) {
-        res.innerText = "Ingresa cuántas horas gastas al día actualmente.";
-        res.classList.remove('hidden');
-        return;
-    }
-
-    setLoading(btn, true, 'Calculando...');
-
-    const system = "Eres NexumIA Consultor. El usuario gasta tiempo en tareas manuales de administración. Calcula el ahorro anual (300 días laborables) y menciona cómo ese tiempo podría usarse para crecer el negocio o pasar tiempo con la familia. Sé inspirador. Máximo 80 palabras.";
-    const text = await fetchAI(`Gasto ${hours.value} horas diarias en administración manual.`, system);
-
-    showResult(res, text);
-    setLoading(btn, false, '<i class="fas fa-calculator"></i> Calcular Beneficio');
+    if (!val) return;
+    UI.setLoading(btn, true, 'Calculando...');
+    const sys = "Eres NexumIA Consultor. Calcula ahorro anual de tiempo y da un consejo inspirador. Máximo 80 palabras.";
+    const text = await NexumIA.ask(`${val} horas diarias manuales`, sys);
+    UI.showResult(res, text, `${val} horas/día`);
+    UI.setLoading(btn, false, '<i class="fas fa-calculator"></i> Calcular Beneficio');
 }
 
-/**
- * Smart Marketing Feature
- */
 async function writePromo() {
-    const promo = document.getElementById('promo-name');
+    const input = document.getElementById('promo-name');
     const res = document.getElementById('res-promo');
     const btn = document.getElementById('btn-promo');
+    const val = input.value.trim();
 
-    if (!promo.value.trim()) {
-        res.innerText = "Escribe una idea breve de tu promoción.";
-        res.classList.remove('hidden');
-        return;
-    }
-
-    setLoading(btn, true, 'Redactando...');
-
-    const system = "Eres NexumIA Marketing, un experto en crecimiento de negocios locales. Genera un mensaje de WhatsApp creativo y persuasivo. Destaca los beneficios tecnológicos de NexumPOS, como la Transparencia con Doble Pantalla para clientes o el Control Total de Proveedores si es relevante. Usa emojis, mantén un tono amigable mexicano e incluye [Nombre del Cliente]. Invita a la acción de manera natural.";
-    const text = await fetchAI(`Promoción: ${promo.value}`, system);
-
-    showResult(res, text);
-    setLoading(btn, false, '<i class="fas fa-magic"></i> Generar Promo');
-}
-
-// --- UI Helpers ---
-
-function setLoading(btn, isLoading, originalText) {
-    if (isLoading) {
-        btn.disabled = true;
-        btn.innerHTML = `<div class="w-5 h-5 border-2 border-white/30 border-t-white loader rounded-full"></div> ${originalText}`;
-    } else {
-        btn.disabled = false;
-        btn.innerHTML = originalText;
-    }
-}
-
-function showResult(element, text) {
-    element.innerHTML = text.replace(/\n/g, '<br>');
-    element.classList.remove('hidden');
-    element.classList.add('animate-fade-in');
+    if (!val) return;
+    UI.setLoading(btn, true, 'Redactando...');
+    const sys = "Eres NexumIA Marketing. Crea un mensaje de WhatsApp creativo incluyendo beneficios de Doble Pantalla y Control de Proveedores de NexumPOS. Usa emojis. Máximo 100 palabras.";
+    const text = await NexumIA.ask(val, sys);
+    UI.showResult(res, text, val);
+    UI.setLoading(btn, false, '<i class="fas fa-magic"></i> Generar Promo');
 }
