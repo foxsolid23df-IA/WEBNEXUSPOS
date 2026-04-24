@@ -135,15 +135,6 @@
                 <div class="hidden md:flex items-center gap-8">
                     <a href="#soluciones"
                         class="text-sm font-semibold text-slate-600 hover:text-indigo-600 transition-colors">Soluciones</a>
-                    <a href="#ia-demo"
-                        class="text-sm font-semibold text-slate-600 hover:text-indigo-600 transition-colors flex items-center gap-2">
-                        <span class="relative flex h-2 w-2">
-                            <span
-                                class="animate-ping absolute inline-flex h-full w-full rounded-full bg-indigo-500 opacity-75"></span>
-                            <span class="relative inline-flex rounded-full h-2 w-2 bg-indigo-500"></span>
-                        </span>
-                        Laboratorio IA
-                    </a>
                     <a href="https://wa.me/525650607108" target="_blank"
                         class="bg-slate-900 text-white text-xs font-bold px-6 py-2.5 rounded-xl hover:bg-indigo-600 transition-all duration-300 shadow-md hover:shadow-indigo-200">
                         Contactar Soporte
@@ -195,10 +186,6 @@
                                 <i class="fab fa-whatsapp text-xl"></i> Demo Gratis Ahora
                             </span>
                         </a>
-                        <button onclick="document.getElementById('ia-demo').scrollIntoView({behavior:'smooth'})"
-                            class="px-8 py-4 bg-white text-slate-900 font-bold rounded-2xl border border-slate-200 hover:border-indigo-600 hover:text-indigo-600 transition-all hover:bg-indigo-50/50">
-                            Probar Laboratorio IA
-                        </button>
                     </div>
 
                     <div class="mt-12 flex items-center justify-center lg:justify-start gap-6">
@@ -268,87 +255,7 @@
         </div>
     </section>
 
-    <!-- Laboratory Section -->
-    <section id="ia-demo" class="py-32 mesh-gradient relative overflow-hidden">
-        <div class="hero-glow"></div>
-        <div
-            class="absolute inset-0 opacity-10 bg-[radial-gradient(#4f46e5_1px,transparent_1px)] [background-size:40px_40px]">
-        </div>
 
-        <div class="container mx-auto px-6 relative reveal">
-            <div class="max-w-3xl mx-auto text-center mb-20">
-                <div
-                    class="inline-block px-4 py-1.5 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 text-[10px] font-black uppercase tracking-[0.2em] mb-6">
-                    Módulo de Inteligencia
-                </div>
-                <h2 class="text-4xl lg:text-6xl font-bold text-white mb-6 font-outfit">Laboratorio Nexum<span
-                        class="text-indigo-500">IA</span> ✨</h2>
-                <p class="text-slate-400 text-lg">Prueba el poder de nuestra IA diseñada específicamente para el sector
-                    servicios en México.</p>
-            </div>
-
-            <div class="grid lg:grid-cols-3 gap-8">
-                <!-- AI Card 1 -->
-                <div
-                    class="glass-card-dark group p-10 rounded-[2.5rem] hover:bg-white/5 transition-all duration-500 reveal stagger-1">
-                    <div
-                        class="w-16 h-16 rounded-2xl bg-indigo-500/20 flex items-center justify-center text-indigo-400 text-3xl mb-8 group-hover:scale-110 group-hover:rotate-3 transition-transform">
-                        <i class="fas fa-shield-halved"></i>
-                    </div>
-                    <h3 class="text-2xl font-bold text-white mb-4 font-outfit">Auditoría Nexum</h3>
-                    <p class="text-slate-400 text-sm mb-8 leading-relaxed">Detecta anomalías o fugas en tu inventario.
-                        Nuestra IA encontrará la explicación lógica.</p>
-                    <textarea id="audit-input" placeholder="Ej: Faltan 5 kg de detergente..."
-                        class="w-full h-32 px-5 py-4 bg-white/5 border border-white/10 rounded-2xl text-white text-sm focus:outline-none focus:border-indigo-500 transition-colors resize-none mb-6"></textarea>
-                    <button onclick="runAuditAI()" id="btn-audit"
-                        class="w-full py-4 bg-indigo-600 text-white font-bold rounded-2xl hover:bg-indigo-500 transition-all flex items-center justify-center gap-3 shadow-lg shadow-indigo-500/20">
-                        <i class="fas fa-bolt-lightning text-yellow-400"></i> Analizar Caso
-                    </button>
-                    <div id="res-audit" class="mt-6 chat-container hidden animate-fade-in"></div>
-                </div>
-
-                <!-- AI Card 2 -->
-                <div
-                    class="glass-card-dark group p-10 rounded-[2.5rem] hover:bg-white/5 transition-all duration-500 lg:translate-y-8 reveal stagger-2">
-                    <div
-                        class="w-16 h-16 rounded-2xl bg-indigo-500/20 flex items-center justify-center text-indigo-400 text-3xl mb-8 group-hover:scale-110 group-hover:-rotate-3 transition-transform">
-                        <i class="fas fa-chart-line"></i>
-                    </div>
-                    <h3 class="text-2xl font-bold text-white mb-4 font-outfit">Ahorro y ROI</h3>
-                    <p class="text-slate-400 text-sm mb-8 leading-relaxed">¿Cuánto vale tu tiempo? Calcula el impacto
-                        real de automatizar tu administración.</p>
-                    <div class="relative mb-6">
-                        <input id="roi-hours" type="number" placeholder="Horas manuales / día"
-                            class="w-full px-5 py-4 bg-white/5 border border-white/10 rounded-2xl text-white text-sm focus:outline-none focus:border-indigo-500 transition-colors">
-                    </div>
-                    <button onclick="calculateROI()" id="btn-roi"
-                        class="w-full py-4 bg-indigo-600 text-white font-bold rounded-2xl hover:bg-indigo-500 transition-all flex items-center justify-center gap-3 shadow-lg shadow-indigo-500/20">
-                        <i class="fas fa-calculator"></i> Calcular Beneficio
-                    </button>
-                    <div id="res-roi" class="mt-6 chat-container hidden animate-fade-in"></div>
-                </div>
-
-                <!-- AI Card 3 -->
-                <div
-                    class="glass-card-dark group p-10 rounded-[2.5rem] hover:bg-white/5 transition-all duration-500 reveal stagger-3">
-                    <div
-                        class="w-16 h-16 rounded-2xl bg-pink-500/20 flex items-center justify-center text-pink-400 text-3xl mb-8 group-hover:scale-110 group-hover:rotate-3 transition-transform">
-                        <i class="fas fa-bullhorn"></i>
-                    </div>
-                    <h3 class="text-2xl font-bold text-white mb-4 font-outfit">Smart Marketing</h3>
-                    <p class="text-slate-400 text-sm mb-8 leading-relaxed">Crea campañas de WhatsApp que emocionen a tus
-                        clientes y generen visitas.</p>
-                    <input id="promo-name" type="text" placeholder="Ej: Promo lavado por apertura"
-                        class="w-full px-5 py-4 bg-white/5 border border-white/10 rounded-2xl text-white text-sm focus:outline-none focus:border-pink-500 transition-colors mb-6">
-                    <button onclick="writePromo()" id="btn-promo"
-                        class="w-full py-4 bg-pink-600 text-white font-bold rounded-2xl hover:bg-pink-500 transition-all flex items-center justify-center gap-3 shadow-lg shadow-pink-500/20">
-                        <i class="fas fa-magic"></i> Generar Promo
-                    </button>
-                    <div id="res-promo" class="mt-6 chat-container hidden animate-fade-in italic"></div>
-                </div>
-            </div>
-        </div>
-    </section>
 
     <!-- Solutions -->
     <section id="soluciones" class="py-32 bg-white relative overflow-hidden">
@@ -522,7 +429,7 @@
                                 </div>
                                 <div>
                                     <p class="text-[10px] font-black uppercase tracking-[0.2em] text-indigo-500/70">
-                                        Expansión 2024</p>
+                                        Expansión 2027</p>
                                     <h4 class="text-xl font-bold font-outfit">Próximamente: Nexum <span
                                             class="text-indigo-500">Food</span></h4>
                                     <p class="text-xs text-indigo-200/50">Software especializado para restaurantes y
@@ -542,7 +449,7 @@
                                 class="absolute -inset-6 bg-gradient-to-tr from-indigo-400 to-indigo-500 opacity-20 blur-3xl rounded-[3rem] group-hover:opacity-40 transition-opacity">
                             </div>
                             <div
-                                class="relative bg-white border border-slate-100 p-3 rounded-[3rem] shadow-2xl overflow-hidden transform lg:rotate-2 group-hover:rotate-0 transition-all duration-700">
+                                class="relative bg-white border border-slate-100 p-3 rounded-[3rem] shadow-2xl overflow-hidden transform group-hover:rotate-0 transition-all duration-700">
                                 <img src="assets/img/retail_pos.png" alt="Nexum POS Soluciones Multi-Giro"
                                     class="w-full h-auto rounded-[2.2rem]" loading="lazy">
                                 <div
@@ -1035,7 +942,6 @@
                     <h5 class="font-bold mb-6 uppercase text-xs tracking-widest text-indigo-500">Navegación</h5>
                     <ul class="space-y-4 text-slate-400 text-sm font-medium">
                         <li><a href="#soluciones" class="hover:text-white transition-colors">Soluciones</a></li>
-                        <li><a href="#ia-demo" class="hover:text-white transition-colors">Laboratorio IA</a></li>
                         <li><a href="#contacto" class="hover:text-white transition-colors">Contacto</a></li>
                         <li><a href="https://wa.me/525650607108" class="hover:text-white transition-colors">Agendar
                                 Demo</a></li>
